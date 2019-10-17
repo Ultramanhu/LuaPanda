@@ -45,6 +45,7 @@ local attachInterval = 1;               --attach间隔时间(s)
 local customGetSocketInstance = nil;    --支持用户实现一个自定义调用luasocket的函数，函数返回值必须是一个socket实例。例: function() return require("socket.core").tcp() end;
 local consoleLogLevel = 2;           --打印在控制台(print)的日志等级 0 : all/ 1: info/ 2: error.
 local connectTimeoutSec = 0.005;       --等待连接超时时间, 单位s. 时间过长等待attach时会造成卡顿，时间过短可能无法连接。建议值0.005 - 0.05
+local enableCaseInsensitive = false;
 --用户设置项END
 
 local debuggerVer = "2.3.0";                 --debugger版本号
@@ -85,6 +86,7 @@ local currentHookState;
 --断点信息
 local breaks = {};              --保存断点的数组
 this.breaks = breaks;           --供hookLib调用
+local breaks_name_map = {};     --当开启大小写不敏感时记录原有的大小写拼写关系
 local recCallbackId = "";
 --VSCode端传过来的配置，在VSCode端的launch配置，传过来并赋值
 local luaFileExtension = "";    --脚本后缀
@@ -151,6 +153,16 @@ local env = setmetatable({ }, {
         this.setVariableValue( varName, _G.LuaPanda.curStackId, newValue);
     end
 });
+
+function this.parseFileName(filename)
+    if not enableCaseInsensitive then
+        return filename
+    end
+
+    local lower = string.lower(filename)
+    local path = breaks_name_map[lower]
+    return path or ""
+end
 
 -----------------------------------------------------------------------------
 -- 流程
@@ -247,6 +259,7 @@ function this.clearData()
     clibPath = nil;
     -- reset breaks
     breaks = {};
+    breaks_name_map = {};
     formatPathCache = {};
     this.breaks = breaks;
     if hookLib ~= nil then
@@ -855,12 +868,24 @@ function this.dataProcess( dataStr )
             bkPath = this.getFilenameFromPath(bkPath);
         end
         this.printToVSCode("setBreakPoint path:"..tostring(bkPath));
+        
+        local tolower = function(str)
+            if not enableCaseInsensitive then
+                return str
+            end
+            return string.lower(str);
+        end
+
+        local keypath = tolower(bkPath);
         breaks[bkPath] = dataTable.info.bks;
+        breaks_name_map[keypath] = bkPath;
 
         -- 当v为空时，从断点列表中去除文件
         for k, v in pairs(breaks) do
             if next(v) == nil then
                 breaks[k] = nil;
+                local kl = tolower(k);
+                breaks_name_map[kl] = nil;
             end
         end
 
@@ -871,7 +896,7 @@ function this.dataProcess( dataStr )
 
         if currentRunState ~= runState.WAIT_CMD then
             if hookLib == nil then
-                local fileBP, G_BP =this.checkHasBreakpoint(lastRunFilePath);
+                local fileBP, G_BP = this.checkHasBreakpoint(lastRunFilePath);
                 if fileBP == false then
                     if G_BP == true then
                         this.changeHookState(hookState.MID_HOOK);
@@ -1521,6 +1546,7 @@ function this.isHitBreakpoint( info )
     local breakpointPath = info.source;
     local isPathHit = false;
     
+    breakpointPath = this.parseFileName(breakpointPath);
     if breaks[breakpointPath] then
         isPathHit = true;
     end
@@ -1637,6 +1663,7 @@ function this.checkHasBreakpoint(fileName)
     end
     --当前文件中是否有断点
     if fileName ~= nil then
+        fileName = this.parseFileName(fileName);
         return breaks[fileName] ~= nil, hasBk;
     else
         return hasBk;
@@ -1644,6 +1671,7 @@ function this.checkHasBreakpoint(fileName)
 end
 
 function this.checkfuncHasBreakpoint(sLine, eLine, fileName)
+    fileName = this.parseFileName(fileName);
     if breaks[fileName] == nil then
         return false;
     end
