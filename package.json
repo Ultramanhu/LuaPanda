@@ -183,7 +183,6 @@
 						"stopOnEntry": true,
 						"useCHook": true,
 						"autoPathMode": true,
-						"enableCaseInsensitive": false,
 						"logLevel": 1
 					},
 					{

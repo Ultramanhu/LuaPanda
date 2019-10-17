@@ -31,7 +31,6 @@
             "connectionPort": 8818, //连接端口号
             "stopOnEntry": true, //建立连接后自动停止
             "useCHook": true, //使用C调试库
-            "enableCaseInsensitive": false, //大小写不敏感
             "logLevel": 1 //日志等级，默认无需修改
         },
         {
