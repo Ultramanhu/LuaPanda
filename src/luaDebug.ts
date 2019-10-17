@@ -154,6 +154,7 @@ export class LuaDebugSession extends LoggingDebugSession {
         sendArgs["logLevel"] = args.logLevel;
         sendArgs["debugMode"] = args.DebugMode;
         sendArgs["pathCaseSensitivity"] = args.pathCaseSensitivity;
+        sendArgs["enableCaseInsensitive"] = args.enableCaseInsensitive;
         sendArgs["OSType"] = os.type();
         sendArgs["clibPath"] = clibPath;
         sendArgs["useCHook"] = args.useCHook;

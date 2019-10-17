@@ -478,6 +478,7 @@ function this.getInfo()
     strTable[#strTable + 1] = "pathCaseSensitivity:" .. tostring(pathCaseSensitivity) .. ' | ';
     strTable[#strTable + 1] = "attachMode:".. tostring(openAttachMode).. ' | ';
     strTable[#strTable + 1] = "autoPathMode:".. tostring(autoPathMode).. ' | ';
+    strTable[#strTable + 1] = "enableCaseInsensitive:".. tostring(enableCaseInsensitive).. ' | ';
 
     if userSetUseClib then
         strTable[#strTable + 1] = "useCHook:true";
@@ -1041,6 +1042,7 @@ function this.dataProcess( dataStr )
         cwd = this.genUnifiedPath(dataTable.info.cwd);
         --logLevel
         logLevel = tonumber(dataTable.info.logLevel) or 1;
+
         --autoPathMode
         if dataTable.info.autoPathMode == "true" then
             autoPathMode = true;
@@ -1048,10 +1050,16 @@ function this.dataProcess( dataStr )
             autoPathMode = false;
         end
 
-        if  dataTable.info.pathCaseSensitivity == "true" then
-            pathCaseSensitivity =  true;
+        if dataTable.info.pathCaseSensitivity == "true" then
+            pathCaseSensitivity = true;
         else
-            pathCaseSensitivity =  false;
+            pathCaseSensitivity = false;
+        end
+
+        if dataTable.info.enableCaseInsensitive == "true" then
+            enableCaseInsensitive = true;
+        else
+            enableCaseInsensitive = false;
         end
  
         --OS type
