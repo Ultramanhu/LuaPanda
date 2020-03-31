@@ -35,8 +35,7 @@
 │   ├── debugger_lib         	
 │   │	├── libpdebug.h/cpp     C调试库源码
 │   │	└── plugins				打包好的调试库文件
-│   ├── LuaPanda.lua         	Debugger源码
-│   └── DebugTools.lua          Debugger工具文件
+│   └── LuaPanda.lua         	Debugger源码
 ├── Docs						项目文档
 ├── LICENSE.txt					证书
 ├── package.json				工程配置文件
@@ -44,7 +43,7 @@
 ├── src							VSCode Extension源码
 │   ├── LogManager.ts			日志管理模块
 │   ├── StatusBarManager.ts		状态栏管理模块
-│   ├── dataProcesser.ts		adapter<->debugger之间数据收发
+│   ├── dataProcessor.ts		adapter<->debugger之间数据收发
 │   ├── debugAdapter.ts			Adapter入口文件
 │   ├── extension.ts			VSCode插件启动文件
 │   ├── luaDebug.ts				实现Adapter的主要功能

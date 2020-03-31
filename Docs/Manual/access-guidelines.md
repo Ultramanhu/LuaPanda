@@ -1,4 +1,4 @@
-# 接入指引
+# 调试器接入指引
 
 [TOC]
 
@@ -71,7 +71,7 @@ launch.json文件中配置项 `"autoPathMode": true/false` 可以设置是否使
 
 ### 第二步 放入debugger 文件，并引用
 
-文件：`LuaPanda.lua`, `DebugTools.lua`
+文件：`LuaPanda.lua`
 
 下载位置：github 的 `Debugger` 目录下
 
